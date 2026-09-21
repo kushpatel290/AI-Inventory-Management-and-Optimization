@@ -57,6 +57,7 @@ def create_inventory(
     # to the existing quantity.
     if existing_inventory is not None:
         existing_inventory.quantity += inventory.quantity
+        existing_inventory.reorder_level = inventory.reorder_level
 
         db.commit()
         db.refresh(existing_inventory)
@@ -89,13 +90,11 @@ def get_inventory(
     return inventory
 
 
-@router.put(
-    "/{inventory_id}",
-    response_model=InventoryResponse
-)
+@router.put("/{inventory_id}", response_model=InventoryResponse)
 def update_inventory(
     inventory_id: int,
     quantity: int,
+    reorder_level: int | None = None,
     db: Session = Depends(get_db)
 ):
     inventory = db.query(Inventory).filter(
@@ -103,24 +102,22 @@ def update_inventory(
     ).first()
 
     if inventory is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Inventory not found"
-        )
+        raise HTTPException(status_code=404, detail="Inventory not found")
 
     if quantity < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="Quantity cannot be negative"
-        )
+        raise HTTPException(status_code=400, detail="Quantity cannot be negative")
 
     inventory.quantity = quantity
+
+    if reorder_level is not None:
+        if reorder_level < 0:
+            raise HTTPException(status_code=400, detail="Reorder level cannot be negative")
+        inventory.reorder_level = reorder_level
 
     db.commit()
     db.refresh(inventory)
 
     return inventory
-
 
 @router.delete(
     "/{inventory_id}"
