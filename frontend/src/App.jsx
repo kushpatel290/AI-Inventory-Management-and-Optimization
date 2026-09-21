@@ -53,6 +53,7 @@ function App() {
       product_id: "",
       warehouse_id: "",
       quantity: "",
+      reorder_level: "",
     });
 
   const [formMessage, setFormMessage] = useState("");
@@ -570,6 +571,15 @@ function App() {
       return;
     }
 
+    if (
+      Number(inventoryFormData.reorder_level || 0) < 0
+    ) {
+      setFormError(
+        "Reorder level cannot be negative."
+      );
+      return;
+    }
+
     try {
       const response = await fetch(
         `${API_URL}/inventory/`,
@@ -587,6 +597,9 @@ function App() {
             ),
             quantity: Number(
               inventoryFormData.quantity
+            ),
+            reorder_level: Number(
+              inventoryFormData.reorder_level || 0
             ),
           }),
         }
@@ -609,6 +622,7 @@ function App() {
         product_id: "",
         warehouse_id: "",
         quantity: "",
+        reorder_level: "",
       });
 
       await fetchData();
@@ -667,6 +681,7 @@ function App() {
       product_id: "",
       warehouse_id: "",
       quantity: "",
+      reorder_level: "",
     });
 
     setFormMessage("");
@@ -707,7 +722,8 @@ function App() {
 
   const lowStockItems = inventory.filter(
     (item) =>
-      Number(item.quantity || 0) <= 10
+      Number(item.quantity || 0) <=
+      Number(item.reorder_level || 10)
   );
 
   // =========================================================
@@ -1240,6 +1256,7 @@ function App() {
                     <th>PRODUCT</th>
                     <th>WAREHOUSE</th>
                     <th>QUANTITY</th>
+                    <th>REORDER LEVEL</th>
                   </tr>
                 </thead>
 
@@ -1314,12 +1331,22 @@ function App() {
                             className={`quantity-badge ${
                               Number(
                                 item.quantity
-                              ) <= 10
+                              ) <=
+                              Number(
+                                item.reorder_level ||
+                                  10
+                              )
                                 ? "low-stock"
                                 : ""
                             }`}
                           >
                             {item.quantity}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span className="muted-text">
+                            {item.reorder_level ?? 0}
                           </span>
                         </td>
                       </tr>
@@ -2262,6 +2289,27 @@ function App() {
                       handleInventoryInputChange
                     }
                     placeholder="e.g. 100"
+                  />
+                </div>
+
+                <div className="form-group full">
+                  <label htmlFor="inventory-reorder-level">
+                    Reorder Level
+                  </label>
+
+                  <input
+                    id="inventory-reorder-level"
+                    name="reorder_level"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={
+                      inventoryFormData.reorder_level
+                    }
+                    onChange={
+                      handleInventoryInputChange
+                    }
+                    placeholder="e.g. 20"
                   />
                 </div>
               </div>
