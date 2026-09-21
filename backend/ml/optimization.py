@@ -1,6 +1,6 @@
 import math
 
-from ml.predict import get_latest_features, load_model
+from ml.predict import predict_product_demand
 
 
 SERVICE_LEVEL_Z = 1.65
@@ -18,60 +18,36 @@ def calculate_optimization(
     if lead_time_days <= 0:
         raise ValueError("Lead time must be greater than 0.")
 
-    # Load trained model
-    model, features = load_model()
-
-    # Get latest sales-based features
-    feature_values = get_latest_features(
+    # Get demand prediction.
+    prediction = predict_product_demand(
         product_id,
         warehouse_id,
     )
 
-    # Prepare model input
-    import pandas as pd
+    predicted_daily_demand = prediction["predicted_demand"]
+    demand_std = prediction["demand_std"]
+    prediction_method = prediction["prediction_method"]
 
-    input_data = pd.DataFrame(
-        [feature_values]
-    )
-
-    input_data = input_data[features]
-
-    # Predict daily demand
-    predicted_daily_demand = model.predict(
-        input_data
-    )[0]
-
-    predicted_daily_demand = max(
-        0,
-        predicted_daily_demand
-    )
-
-    # Demand variability
-    demand_std = feature_values["rolling_std_7"]
-
-    if pd.isna(demand_std):
-        demand_std = 0
-
-    # Demand during lead time
+    # Demand during lead time.
     lead_time_demand = (
         predicted_daily_demand
         * lead_time_days
     )
 
-    # Safety stock
+    # Safety stock.
     safety_stock = (
         SERVICE_LEVEL_Z
         * demand_std
         * math.sqrt(lead_time_days)
     )
 
-    # Reorder point
+    # Reorder point.
     reorder_point = (
         lead_time_demand
         + safety_stock
     )
 
-    # Recommended order quantity
+    # Recommended order quantity.
     recommended_order_quantity = max(
         0,
         math.ceil(
@@ -79,7 +55,7 @@ def calculate_optimization(
         )
     )
 
-    # Determine status
+    # Determine status.
     if current_stock <= safety_stock:
         status = "CRITICAL"
     elif current_stock < reorder_point:
@@ -116,6 +92,7 @@ def calculate_optimization(
             recommended_order_quantity
         ),
         "status": status,
+        "prediction_method": prediction_method,
     }
 
 
