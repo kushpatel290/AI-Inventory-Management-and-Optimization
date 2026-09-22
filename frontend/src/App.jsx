@@ -31,23 +31,20 @@ function App() {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [transfersLoading, setTransfersLoading] = useState(false);
   const [executingKey, setExecutingKey] = useState("");
-  const [redistributionMessage, setRedistributionMessage] =
-    useState("");
-  const [redistributionError, setRedistributionError] =
-    useState("");
+  const [redistributionMessage, setRedistributionMessage] = useState("");
+  const [redistributionError, setRedistributionError] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [backendConnected, setBackendConnected] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const [showProductForm, setShowProductForm] = useState(false);
-  const [showWarehouseForm, setShowWarehouseForm] =
-    useState(false);
-  const [showInventoryForm, setShowInventoryForm] =
-    useState(false);
+  const [showWarehouseForm, setShowWarehouseForm] = useState(false);
+  const [showInventoryForm, setShowInventoryForm] = useState(false);
 
-  const [activeSection, setActiveSection] =
-    useState("Dashboard");
+  const [editingInventoryId, setEditingInventoryId] = useState(null);
+
+  const [activeSection, setActiveSection] = useState("Dashboard");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -56,19 +53,17 @@ function App() {
     price: "",
   });
 
-  const [warehouseFormData, setWarehouseFormData] =
-    useState({
-      name: "",
-      location: "",
-    });
+  const [warehouseFormData, setWarehouseFormData] = useState({
+    name: "",
+    location: "",
+  });
 
-  const [inventoryFormData, setInventoryFormData] =
-    useState({
-      product_id: "",
-      warehouse_id: "",
-      quantity: "",
-      reorder_level: "",
-    });
+  const [inventoryFormData, setInventoryFormData] = useState({
+    product_id: "",
+    warehouse_id: "",
+    quantity: "",
+    reorder_level: "",
+  });
 
   const [formMessage, setFormMessage] = useState("");
   const [formError, setFormError] = useState("");
@@ -79,9 +74,7 @@ function App() {
 
   const fetchEndpoint = async (endpoint) => {
     try {
-      const response = await fetch(
-        `${API_URL}${endpoint}`
-      );
+      const response = await fetch(`${API_URL}${endpoint}`);
 
       if (!response.ok) {
         throw new Error(
@@ -96,10 +89,7 @@ function App() {
         data: Array.isArray(data) ? data : [],
       };
     } catch (error) {
-      console.error(
-        `API error for ${endpoint}:`,
-        error
-      );
+      console.error(`API error for ${endpoint}:`, error);
 
       return {
         success: false,
@@ -119,11 +109,7 @@ function App() {
       fetchEndpoint("/inventory/"),
     ]);
 
-    const [
-      productsResult,
-      warehousesResult,
-      inventoryResult,
-    ] = results;
+    const [productsResult, warehousesResult, inventoryResult] = results;
 
     let hasConnection = false;
     const errors = [];
@@ -132,27 +118,21 @@ function App() {
       setProducts(productsResult.data);
       hasConnection = true;
     } else {
-      errors.push(
-        `Products: ${productsResult.error}`
-      );
+      errors.push(`Products: ${productsResult.error}`);
     }
 
     if (warehousesResult.success) {
       setWarehouses(warehousesResult.data);
       hasConnection = true;
     } else {
-      errors.push(
-        `Warehouses: ${warehousesResult.error}`
-      );
+      errors.push(`Warehouses: ${warehousesResult.error}`);
     }
 
     if (inventoryResult.success) {
       setInventory(inventoryResult.data);
       hasConnection = true;
     } else {
-      errors.push(
-        `Inventory: ${inventoryResult.error}`
-      );
+      errors.push(`Inventory: ${inventoryResult.error}`);
     }
 
     setBackendConnected(hasConnection);
@@ -192,18 +172,12 @@ function App() {
 
       const data = await response.json();
 
-      setSuggestions(
-        Array.isArray(data) ? data : []
-      );
+      setSuggestions(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error(
-        "Redistribution suggestions error:",
-        error
-      );
+      console.error("Redistribution suggestions error:", error);
 
       setRedistributionError(
-        error.message ||
-          "Unable to load redistribution suggestions."
+        error.message || "Unable to load redistribution suggestions."
       );
     } finally {
       setSuggestionsLoading(false);
@@ -229,27 +203,19 @@ function App() {
 
       const data = await response.json();
 
-      setTransfers(
-        Array.isArray(data) ? data : []
-      );
+      setTransfers(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error(
-        "Transfer history error:",
-        error
-      );
+      console.error("Transfer history error:", error);
 
       setRedistributionError(
-        error.message ||
-          "Unable to load transfer history."
+        error.message || "Unable to load transfer history."
       );
     } finally {
       setTransfersLoading(false);
     }
   };
 
-  const handleExecuteTransfer = async (
-    suggestion
-  ) => {
+  const handleExecuteTransfer = async (suggestion) => {
     const executionKey = [
       suggestion.product_id,
       suggestion.from_warehouse_id,
@@ -270,18 +236,14 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            product_id: Number(
-              suggestion.product_id
-            ),
+            product_id: Number(suggestion.product_id),
             from_warehouse_id: Number(
               suggestion.from_warehouse_id
             ),
             to_warehouse_id: Number(
               suggestion.to_warehouse_id
             ),
-            quantity: Number(
-              suggestion.quantity
-            ),
+            quantity: Number(suggestion.quantity),
             reason:
               suggestion.reason ||
               "Automatic redistribution",
@@ -311,10 +273,7 @@ function App() {
         fetchTransferHistory(),
       ]);
     } catch (error) {
-      console.error(
-        "Execute transfer error:",
-        error
-      );
+      console.error("Execute transfer error:", error);
 
       setRedistributionError(
         error.message ||
@@ -330,9 +289,10 @@ function App() {
     fetchSuggestions();
     fetchTransferHistory();
   }, []);
+
   if (!isAuthenticated) {
-  return <Login onLogin={handleLogin} />;
-}
+    return <Login onLogin={handleLogin} />;
+  }
 
   // =========================================================
   // INPUT HANDLERS
@@ -347,9 +307,7 @@ function App() {
     }));
   };
 
-  const handleWarehouseInputChange = (
-    event
-  ) => {
+  const handleWarehouseInputChange = (event) => {
     const { name, value } = event.target;
 
     setWarehouseFormData((current) => ({
@@ -358,9 +316,7 @@ function App() {
     }));
   };
 
-  const handleInventoryInputChange = (
-    event
-  ) => {
+  const handleInventoryInputChange = (event) => {
     const { name, value } = event.target;
 
     setInventoryFormData((current) => ({
@@ -412,16 +368,12 @@ function App() {
       !formData.category.trim() ||
       !formData.price
     ) {
-      setFormError(
-        "Please fill in all product fields."
-      );
+      setFormError("Please fill in all product fields.");
       return;
     }
 
     if (Number(formData.price) < 0) {
-      setFormError(
-        "Price cannot be negative."
-      );
+      setFormError("Price cannot be negative.");
       return;
     }
 
@@ -451,9 +403,7 @@ function App() {
         );
       }
 
-      setFormMessage(
-        "Product added successfully."
-      );
+      setFormMessage("Product added successfully.");
 
       setFormData({
         name: "",
@@ -469,10 +419,7 @@ function App() {
         setFormMessage("");
       }, 700);
     } catch (error) {
-      console.error(
-        "Add product error:",
-        error
-      );
+      console.error("Add product error:", error);
 
       setFormError(
         error.message ||
@@ -485,9 +432,7 @@ function App() {
   // WAREHOUSE
   // =========================================================
 
-  const handleAddWarehouse = async (
-    event
-  ) => {
+  const handleAddWarehouse = async (event) => {
     event.preventDefault();
 
     setFormMessage("");
@@ -513,8 +458,7 @@ function App() {
           },
           body: JSON.stringify({
             name: warehouseFormData.name.trim(),
-            location:
-              warehouseFormData.location.trim(),
+            location: warehouseFormData.location.trim(),
           }),
         }
       );
@@ -544,10 +488,7 @@ function App() {
         setFormMessage("");
       }, 700);
     } catch (error) {
-      console.error(
-        "Add warehouse error:",
-        error
-      );
+      console.error("Add warehouse error:", error);
 
       setFormError(
         error.message ||
@@ -560,9 +501,7 @@ function App() {
   // INVENTORY
   // =========================================================
 
-  const handleAddInventory = async (
-    event
-  ) => {
+  const handleAddInventory = async (event) => {
     event.preventDefault();
 
     setFormMessage("");
@@ -579,60 +518,71 @@ function App() {
       return;
     }
 
-    if (
-      Number(inventoryFormData.quantity) < 0
-    ) {
-      setFormError(
-        "Quantity cannot be negative."
-      );
+    if (Number(inventoryFormData.quantity) < 0) {
+      setFormError("Quantity cannot be negative.");
       return;
     }
 
     if (
       Number(inventoryFormData.reorder_level || 0) < 0
     ) {
-      setFormError(
-        "Reorder level cannot be negative."
-      );
+      setFormError("Reorder level cannot be negative.");
       return;
     }
 
     try {
-      const response = await fetch(
-        `${API_URL}/inventory/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            product_id: Number(
-              inventoryFormData.product_id
-            ),
-            warehouse_id: Number(
-              inventoryFormData.warehouse_id
-            ),
-            quantity: Number(
+      const isEditing = Boolean(editingInventoryId);
+
+      const response = isEditing
+        ? await fetch(
+            `${API_URL}/inventory/${editingInventoryId}?quantity=${Number(
               inventoryFormData.quantity
-            ),
-            reorder_level: Number(
+            )}&reorder_level=${Number(
               inventoryFormData.reorder_level || 0
-            ),
-          }),
-        }
-      );
+            )}`,
+            {
+              method: "PUT",
+            }
+          )
+        : await fetch(
+            `${API_URL}/inventory/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                product_id: Number(
+                  inventoryFormData.product_id
+                ),
+                warehouse_id: Number(
+                  inventoryFormData.warehouse_id
+                ),
+                quantity: Number(
+                  inventoryFormData.quantity
+                ),
+                reorder_level: Number(
+                  inventoryFormData.reorder_level || 0
+                ),
+              }),
+            }
+          );
 
       if (!response.ok) {
         throw new Error(
           await getApiErrorMessage(
             response,
-            "Unable to add inventory."
+            isEditing
+              ? "Unable to update inventory."
+              : "Unable to add inventory."
           )
         );
       }
 
       setFormMessage(
-        "Inventory added successfully."
+        isEditing
+          ? "Inventory updated successfully."
+          : "Inventory added successfully."
       );
 
       setInventoryFormData({
@@ -642,6 +592,8 @@ function App() {
         reorder_level: "",
       });
 
+      setEditingInventoryId(null);
+
       await fetchData();
 
       setTimeout(() => {
@@ -649,14 +601,11 @@ function App() {
         setFormMessage("");
       }, 700);
     } catch (error) {
-      console.error(
-        "Add inventory error:",
-        error
-      );
+      console.error("Save inventory error:", error);
 
       setFormError(
         error.message ||
-          "Unable to add inventory. Please try again."
+          "Unable to save inventory. Please try again."
       );
     }
   };
@@ -701,6 +650,8 @@ function App() {
       reorder_level: "",
     });
 
+    setEditingInventoryId(null);
+
     setFormMessage("");
     setFormError("");
   };
@@ -724,6 +675,31 @@ function App() {
   const openInventoryForm = () => {
     setFormMessage("");
     setFormError("");
+    setEditingInventoryId(null);
+
+    setInventoryFormData({
+      product_id: "",
+      warehouse_id: "",
+      quantity: "",
+      reorder_level: "",
+    });
+
+    setShowInventoryForm(true);
+  };
+
+  const openEditInventoryForm = (item) => {
+    setFormMessage("");
+    setFormError("");
+
+    setEditingInventoryId(item.id);
+
+    setInventoryFormData({
+      product_id: String(item.product_id),
+      warehouse_id: String(item.warehouse_id),
+      quantity: String(item.quantity),
+      reorder_level: String(item.reorder_level ?? 0),
+    });
+
     setShowInventoryForm(true);
   };
 
@@ -787,9 +763,7 @@ function App() {
 
           <div>
             <h1>Inventory</h1>
-            <span>
-              Management System
-            </span>
+            <span>Management System</span>
           </div>
         </div>
 
@@ -872,9 +846,7 @@ function App() {
               WORKSPACE / DASHBOARD
             </div>
 
-            <h2>
-              Inventory Overview
-            </h2>
+            <h2>Inventory Overview</h2>
 
             <p>
               Keep track of your products,
@@ -985,9 +957,7 @@ function App() {
             </div>
 
             <div className="stat-content">
-              <span>
-                Total Stock
-              </span>
+              <span>Total Stock</span>
 
               <strong>
                 {loading
@@ -1281,6 +1251,7 @@ function App() {
                     <th>WAREHOUSE</th>
                     <th>QUANTITY</th>
                     <th>REORDER LEVEL</th>
+                    <th>ACTION</th>
                   </tr>
                 </thead>
 
@@ -1372,6 +1343,17 @@ function App() {
                           <span className="muted-text">
                             {item.reorder_level ?? 0}
                           </span>
+                        </td>
+
+                        <td>
+                          <button
+                            className="secondary-button"
+                            onClick={() =>
+                              openEditInventoryForm(item)
+                            }
+                          >
+                            Edit
+                          </button>
                         </td>
                       </tr>
                     );
@@ -1698,8 +1680,7 @@ function App() {
                             )
                         );
 
-                      let formattedDate =
-                        "—";
+                      let formattedDate = "—";
 
                       if (
                         transfer.created_at
@@ -1725,8 +1706,7 @@ function App() {
                         >
                           <td>
                             <span className="muted-text">
-                              #
-                              {transfer.id}
+                              #{transfer.id}
                             </span>
                           </td>
 
@@ -1827,9 +1807,7 @@ function App() {
                       const product =
                         products.find(
                           (entry) =>
-                            Number(
-                              entry.id
-                            ) ===
+                            Number(entry.id) ===
                             Number(
                               item.product_id
                             )
@@ -1838,9 +1816,7 @@ function App() {
                       const warehouse =
                         warehouses.find(
                           (entry) =>
-                            Number(
-                              entry.id
-                            ) ===
+                            Number(entry.id) ===
                             Number(
                               item.warehouse_id
                             )
@@ -2174,7 +2150,7 @@ function App() {
       )}
 
       {/* =====================================================
-          ADD INVENTORY MODAL
+          INVENTORY MODAL
           ===================================================== */}
 
       {showInventoryForm && (
@@ -2194,11 +2170,16 @@ function App() {
                   STOCK MANAGEMENT
                 </span>
 
-                <h3>Add Inventory</h3>
+                <h3>
+                  {editingInventoryId
+                    ? "Edit Inventory"
+                    : "Add Inventory"}
+                </h3>
 
                 <p>
-                  Assign stock to a product
-                  and warehouse.
+                  {editingInventoryId
+                    ? "Update the stock quantity and reorder level."
+                    : "Assign stock to a product and warehouse."}
                 </p>
               </div>
 
@@ -2231,6 +2212,9 @@ function App() {
                     onChange={
                       handleInventoryInputChange
                     }
+                    disabled={Boolean(
+                      editingInventoryId
+                    )}
                   >
                     <option value="">
                       Select a product
@@ -2269,6 +2253,9 @@ function App() {
                     onChange={
                       handleInventoryInputChange
                     }
+                    disabled={Boolean(
+                      editingInventoryId
+                    )}
                   >
                     <option value="">
                       Select a warehouse
@@ -2365,7 +2352,9 @@ function App() {
                   type="submit"
                   className="primary-button"
                 >
-                  Save Inventory
+                  {editingInventoryId
+                    ? "Update Inventory"
+                    : "Save Inventory"}
                 </button>
               </div>
             </form>
