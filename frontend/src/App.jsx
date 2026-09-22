@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
 
 const API_URL = (
   import.meta.env.VITE_API_URL ||
@@ -8,6 +9,19 @@ const API_URL = (
 ).replace(/\/$/, "");
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    Boolean(localStorage.getItem("access_token"))
+  );
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    setIsAuthenticated(false);
+  };
+
   const [products, setProducts] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -316,6 +330,9 @@ function App() {
     fetchSuggestions();
     fetchTransferHistory();
   }, []);
+  if (!isAuthenticated) {
+  return <Login onLogin={handleLogin} />;
+}
 
   // =========================================================
   // INPUT HANDLERS
@@ -871,6 +888,13 @@ function App() {
               onClick={fetchData}
             >
               ↻ Refresh
+            </button>
+
+            <button
+              className="logout-button"
+              onClick={handleLogout}
+            >
+              Logout
             </button>
           </div>
         </header>
