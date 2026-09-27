@@ -27,6 +27,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 24px;
 }
 
 body {
@@ -455,6 +456,12 @@ svg,
   background: #fafbfc;
 }
 
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 /* =========================================================
    STAT CARDS
    ========================================================= */
@@ -604,6 +611,7 @@ svg,
 }
 
 .section-header > *:first-child {
+  flex: 1;
   text-align: left;
 }
 
@@ -854,9 +862,6 @@ svg,
 
 /* =========================================================
    STOCK ALERTS TABLE
-   IMPORTANT:
-   THESE RULES APPLY ONLY TO .stock-alert-table.
-   THEY DO NOT CHANGE INVENTORY / PRODUCTS / WAREHOUSES.
    ========================================================= */
 
 .stock-alert-table {
@@ -1006,13 +1011,52 @@ svg,
   align-items: center;
   justify-content: space-between;
 
-  margin: 30px auto 0;
+  gap: 30px;
 
-  padding: 0 2px;
+  margin: 40px auto 0;
+
+  padding: 20px 2px;
+
+  border-top: 1px solid #e2e5e9;
 
   color: #7e8792;
 
   font-size: 12px;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.footer-left span {
+  display: block;
+}
+
+.footer-contact {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+}
+
+.footer-contact span {
+  color: #59636f;
+  font-weight: 600;
+}
+
+.footer-contact a {
+  color: #3566d6;
+  text-decoration: none;
+}
+
+.footer-contact a:hover {
+  color: #2f5dc8;
+  text-decoration: underline;
 }
 
 /* =========================================================
@@ -1066,6 +1110,18 @@ svg,
   padding: 24px 26px 20px;
 
   border-bottom: 1px solid #e8ebee;
+
+  text-align: left;
+}
+
+.modal-header > div {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.modal-header .section-kicker {
+  text-align: left;
 }
 
 .modal-header h3 {
@@ -1075,6 +1131,9 @@ svg,
 
   font-size: 22px;
   font-weight: 700;
+
+  line-height: 1.3;
+  text-align: left;
 }
 
 .modal-header p {
@@ -1084,6 +1143,8 @@ svg,
 
   font-size: 14.5px;
   line-height: 1.4;
+
+  text-align: left;
 }
 
 .modal-close {
@@ -1131,6 +1192,8 @@ svg,
   flex-direction: column;
 
   gap: 7px;
+
+  text-align: left;
 }
 
 .form-group.full {
@@ -1138,10 +1201,17 @@ svg,
 }
 
 .form-group label {
+  display: block;
+  width: 100%;
+  margin: 0;
+
   color: #3d4550;
 
   font-size: 13px;
   font-weight: 600;
+
+  line-height: 1.3;
+  text-align: left;
 }
 
 .form-group input,
@@ -1185,6 +1255,12 @@ svg,
 
 .form-group select {
   cursor: pointer;
+}
+
+.form-group select:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .form-message {
@@ -1283,6 +1359,8 @@ svg,
   flex-direction: column;
 
   gap: 7px;
+
+  text-align: left;
 }
 
 .input-group label {
@@ -1290,6 +1368,8 @@ svg,
 
   font-size: 12px;
   font-weight: 600;
+
+  text-align: left;
 }
 
 .input-group select {
@@ -1448,7 +1528,6 @@ svg,
 
 /* =========================================================
    LOGIN
-   FIX: Login styles are global so desktop + mobile work.
    ========================================================= */
 
 .login-page {
@@ -1477,7 +1556,8 @@ svg,
 
   box-sizing: border-box;
 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .login-header {
@@ -1517,6 +1597,8 @@ svg,
   font-size: 15px;
 
   margin-top: 8px;
+
+  text-align: left;
 }
 
 .login-form input {
@@ -1590,6 +1672,56 @@ svg,
   text-align: center;
 
   font-size: 14px;
+}
+
+/* REGISTER / LOGIN SWITCH */
+
+.auth-switch {
+  margin-top: 20px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  text-align: center;
+}
+
+.auth-switch button {
+  display: inline;
+
+  width: auto;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #2563eb;
+
+  font-size: inherit;
+  font-weight: 600;
+
+  line-height: inherit;
+
+  cursor: pointer;
+}
+
+.auth-switch button:hover {
+  background: transparent;
+
+  color: #1d4ed8;
+
+  text-decoration: underline;
+}
+
+.auth-switch button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+
+  border-radius: 3px;
 }
 
 .logout-button {
@@ -1699,7 +1831,7 @@ svg,
 
     flex: 1 1 auto;
 
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .connection-card {
@@ -1762,6 +1894,15 @@ svg,
 
     align-items: flex-start;
 
+    gap: 12px;
+  }
+
+  .footer-contact {
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    flex-direction: column;
+
     gap: 6px;
   }
 
@@ -1819,6 +1960,7 @@ svg,
   .selection-panel {
     margin-left: 16px;
     margin-right: 16px;
+
     padding: 15px;
   }
 

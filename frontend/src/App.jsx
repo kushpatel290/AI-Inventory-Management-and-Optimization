@@ -303,6 +303,10 @@ function App() {
   // =========================================================
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
     const sectionIds = {
       Dashboard: "dashboard",
       Products: "products",
@@ -312,19 +316,32 @@ function App() {
       Redistribution: "redistribution",
     };
 
-    const sections = Object.entries(sectionIds)
-      .map(([name, id]) => ({
-        name,
-        element: document.getElementById(id),
-      }))
-      .filter((section) => section.element);
-
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 180;
+
+      const sections = Object.entries(sectionIds)
+        .map(([name, id]) => {
+          const element = document.getElementById(id);
+
+          if (!element) {
+            return null;
+          }
+
+          const rect = element.getBoundingClientRect();
+          const absoluteTop = window.scrollY + rect.top;
+
+          return {
+            name,
+            element,
+            absoluteTop,
+          };
+        })
+        .filter(Boolean);
+
       let currentSection = "Dashboard";
 
-      sections.forEach(({ name, element }) => {
-        if (element.offsetTop <= scrollPosition) {
+      sections.forEach(({ name, absoluteTop }) => {
+        if (absoluteTop <= scrollPosition) {
           currentSection = name;
         }
       });
@@ -341,7 +358,7 @@ function App() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
@@ -1935,16 +1952,16 @@ function App() {
           <div className="footer-contact">
             <span>Contact:</span>
 
+            <a href="mailto:kushpatel290@gmail.com">
+              kushpatel290@gmail.com
+            </a>
+
             <a href="mailto:parvamehta05@gmail.com">
               parvamehta05@gmail.com
             </a>
 
             <a href="mailto:harshpatels0508@gmail.com">
               harshpatels0508@gmail.com
-            </a>
-
-            <a href="mailto:kushpatel290@gmail.com">
-              kushpatel290@gmail.com
             </a>
           </div>
         </footer>
