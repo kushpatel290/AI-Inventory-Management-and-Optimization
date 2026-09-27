@@ -284,63 +284,10 @@ function App() {
     }
   };
 
-  // =========================================================
-  // AUTHENTICATED DATA LOADING
-  // =========================================================
-
   useEffect(() => {
-    if (!isAuthenticated) {
-      return;
-    }
-
     fetchData();
     fetchSuggestions();
     fetchTransferHistory();
-  }, [isAuthenticated]);
-
-  // =========================================================
-  // SCROLL-BASED ACTIVE NAVIGATION
-  // =========================================================
-
-  useEffect(() => {
-    const sectionIds = {
-      Dashboard: "dashboard",
-      Products: "products",
-      Warehouses: "warehouses",
-      Inventory: "inventory",
-      Optimization: "optimization",
-      Redistribution: "redistribution",
-    };
-
-    const sections = Object.entries(sectionIds)
-      .map(([name, id]) => ({
-        name,
-        element: document.getElementById(id),
-      }))
-      .filter((section) => section.element);
-
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + 180;
-      let currentSection = "Dashboard";
-
-      sections.forEach(({ name, element }) => {
-        if (element.offsetTop <= scrollPosition) {
-          currentSection = name;
-        }
-      });
-
-      setActiveSection(currentSection);
-    };
-
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
-
-    handleScroll();
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
   }, []);
 
   if (!isAuthenticated) {
@@ -1922,31 +1869,13 @@ function App() {
         {/* FOOTER */}
 
         <footer className="page-footer">
-          <div className="footer-left">
-            <span>
-              © 2026 Inventory Management System
-            </span>
+          <span>
+            AI Inventory Management
+          </span>
 
-            <span>
-              AI-Powered Inventory Optimization
-            </span>
-          </div>
-
-          <div className="footer-contact">
-            <span>Contact:</span>
-
-            <a href="mailto:parvamehta05@gmail.com">
-              parvamehta05@gmail.com
-            </a>
-
-            <a href="mailto:harshpatels0508@gmail.com">
-              harshpatels0508@gmail.com
-            </a>
-
-            <a href="mailto:kushpatel290@gmail.com">
-              kushpatel290@gmail.com
-            </a>
-          </div>
+          <span>
+            Inventory optimization dashboard
+          </span>
         </footer>
       </main>
 
