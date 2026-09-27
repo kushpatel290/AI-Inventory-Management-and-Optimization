@@ -284,10 +284,63 @@ function App() {
     }
   };
 
+  // =========================================================
+  // AUTHENTICATED DATA LOADING
+  // =========================================================
+
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
     fetchData();
     fetchSuggestions();
     fetchTransferHistory();
+  }, [isAuthenticated]);
+
+  // =========================================================
+  // SCROLL-BASED ACTIVE NAVIGATION
+  // =========================================================
+
+  useEffect(() => {
+    const sectionIds = {
+      Dashboard: "dashboard",
+      Products: "products",
+      Warehouses: "warehouses",
+      Inventory: "inventory",
+      Optimization: "optimization",
+      Redistribution: "redistribution",
+    };
+
+    const sections = Object.entries(sectionIds)
+      .map(([name, id]) => ({
+        name,
+        element: document.getElementById(id),
+      }))
+      .filter((section) => section.element);
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 180;
+      let currentSection = "Dashboard";
+
+      sections.forEach(({ name, element }) => {
+        if (element.offsetTop <= scrollPosition) {
+          currentSection = name;
+        }
+      });
+
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   if (!isAuthenticated) {
